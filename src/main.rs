@@ -177,6 +177,14 @@ async fn main() {
 
             let stdout = String::from_utf8(output.stdout).unwrap();
 
+            // Delete the file
+            match tokio::fs::remove_file(format!("/tmp/{}", rand_id)).await {
+                Ok(_) => {}
+                Err(e) => {
+                    eprintln!("Failed to delete file: {}", e);
+                }
+            }
+
             // Convert hash to string
             let hash = format!("{:x}", hash);
 
