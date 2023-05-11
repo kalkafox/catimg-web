@@ -307,5 +307,5 @@ async fn main() {
         .or(assets_route)
         .with(warp::cors().allow_any_origin());
 
-    warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
+    warp::serve(routes).run(([0, 0, 0, 0], 3030)).await;
 }
