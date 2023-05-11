@@ -85,7 +85,7 @@ const init = async () => {
   }
 
   const res = await axios.get<string>(
-    `http://localhost:3030/catimg?url=${url}${w ? `&w=${w}` : ''}`,
+    `https://catimg.kalkafox.dev/catimg?url=${url}${w ? `&w=${w}` : ''}`,
   )
 
   clearInterval(interval)
