@@ -315,5 +315,6 @@ async fn main() {
         .or(assets_route)
         .with(warp::cors().allow_any_origin());
 
+    println!("Listening on port 3030");
     warp::serve(routes).run(([0, 0, 0, 0], 3030)).await;
 }
