@@ -17,13 +17,7 @@ async fn main() {
         .unwrap());
     
     {
-        // Check if .cache exists in the folder
-        let cache_path = std::path::Path::new(".cache");
-        if !cache_path.exists() {
-            playwright.install_chromium().unwrap();
-            println!("Restarting...");
-            std::process::exit(0);
-        }
+        playwright.install_chromium().unwrap();
     }
 
     let catimg_route = warp::path!("catimg")
