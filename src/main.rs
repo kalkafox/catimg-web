@@ -260,6 +260,8 @@ async fn main() {
                 // Otherwise, sleep for 100ms
                 tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
             }
+
+            tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
     
             let image = page.screenshot_builder().screenshot().await.unwrap();
     
