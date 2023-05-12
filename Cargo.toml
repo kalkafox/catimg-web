@@ -17,5 +17,5 @@ redis = { version = "0.23.0", features = ["tokio-native-tls-comp"] }
 mongodb = "2.5.0"
 serde = { version = "1.0.163", features = ["derive"] }
 select = "0.6.0"
-#playwright = "0.0.20"
+playwright = "0.0.20"
 mime_guess = "2.0.4"
