@@ -90,13 +90,13 @@ const init = async () => {
 
   clearInterval(interval)
 
-  window.terminalLoaded = true
-
   terminal.clear()
 
   res.data.split('\n').forEach((line) => {
     terminal.writeln(line)
   })
+
+  window.terminalLoaded = true
 }
 
 init()
