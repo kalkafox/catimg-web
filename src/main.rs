@@ -102,10 +102,14 @@ async fn main() {
 
             let url = match query.get("url") {
                 Some(url) => url,
-                None => return Err(warp::reject::not_found()),
+                None => {
+                    eprintln!("URL not set");
+                    return Err(warp::reject::not_found());
+                },
             };
 
             if url.is_empty() {
+                eprintln!("URL is empty");
                 return Err(warp::reject::not_found());
             }
 
@@ -115,6 +119,7 @@ async fn main() {
             let headers = response.headers();
 
             if !response.status().is_success() {
+                eprintln!("Failed to fetch image: {}", response.status());
                 return Err(warp::reject::not_found());
             }
 
@@ -125,6 +130,7 @@ async fn main() {
                 .unwrap()
                 .starts_with("image")
             {
+                eprintln!("URL is not an image");
                 return Err(warp::reject::not_found());
             }
 
@@ -309,10 +315,13 @@ async fn main() {
             Ok::<_, warp::Rejection>(warp::reply::with_header(file, "Content-Type", "text/html"))
         });
 
+    let ping_route = warp::path!("ping").map(|| "pong");
+
     let routes = catimg_route
         .or(preview_route)
         .or(html_route)
         .or(assets_route)
+        .or(ping_route)
         .with(warp::cors().allow_any_origin());
 
     println!("Listening on port 3030");
