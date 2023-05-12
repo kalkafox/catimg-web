@@ -1,8 +1,11 @@
-FROM ubuntu
+FROM alpine
 
-RUN apt update && apt install -y libssl-dev ca-certificates catimg && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache ca-certificates
 
-COPY target/release/catimg-backend /usr/local/bin/catimg-backend
+FROM scratch
+
+COPY --from=0 /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY target/x86_64-unknown-linux-musl/release/catimg-backend /usr/local/bin/catimg-backend
 COPY frontend/dist /frontend
 
 ENTRYPOINT ["/usr/local/bin/catimg-backend"]

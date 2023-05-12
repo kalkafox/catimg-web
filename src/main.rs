@@ -12,11 +12,11 @@ use warp::Filter;
 
 #[main]
 async fn main() {
-    let playwright = Arc::new(playwright::Playwright::initialize()
-        .await
-        .unwrap());
-
-    playwright.prepare().unwrap();
+    // let playwright = Arc::new(playwright::Playwright::initialize()
+    //     .await
+    //     .unwrap());
+    //
+    // playwright.prepare().unwrap();
 
     let catimg_route = warp::path!("catimg")
         .and(warp::query::<HashMap<String, String>>())
@@ -213,56 +213,56 @@ async fn main() {
             Ok::<_, warp::Rejection>(warp::reply::with_status(stdout, warp::http::StatusCode::OK))
         });
 
-    let preview_route = warp::path!("preview")
-        .and(warp::query::<HashMap<String, String>>())
-        .and_then(|query: HashMap<String, String>| async move {
-            let playwright = playwright::Playwright::initialize().await.unwrap();
-            let chromium = playwright.chromium();
-            let browser = chromium.launcher().headless(true).launch().await.unwrap();
-            let context = browser.context_builder().build().await.unwrap();
-            let page = context.new_page().await.unwrap();
-
-            let prefix_url = match std::env::var("CATIMG_URL") {
-                Ok(prefix_url) => prefix_url,
-                Err(_) => "https://catimg.kalkafox.dev".to_string(),
-            };
-
-            let formatted_url = format!(
-                "{}/?url={}&w={}&fs=true",
-                prefix_url,
-                query.get("url").unwrap(),
-                query.get("w").unwrap_or(&"200".to_string())
-            );
-
-            page.goto_builder(formatted_url.as_str())
-                .goto()
-                .await
-                .unwrap();
-
-            // Continuously page.eval("() => window.terminalLoaded").await until it's true
-
-            let now = std::time::Instant::now();
-
-            loop {
-                // If it's been more than 30 seconds, return 404
-                if now.elapsed().as_secs() > 30 {
-                    return Err(warp::reject::not_found());
-                }
-                // If terminalLoaded is true, break
-                let loaded = page.eval("() => window.terminalLoaded").await;
-                if let Ok(loaded) = loaded {
-                    if loaded {
-                        break;
-                    }
-                }
-                // Otherwise, sleep for 100ms
-                tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
-            }
-
-            let image = page.screenshot_builder().screenshot().await.unwrap();
-
-            Ok::<_, warp::Rejection>(warp::reply::with_header(image, "Content-Type", "image/png"))
-        });
+    // let preview_route = warp::path!("preview")
+    //     .and(warp::query::<HashMap<String, String>>())
+    //     .and_then(|query: HashMap<String, String>| async move {
+    //         let playwright = playwright::Playwright::initialize().await.unwrap();
+    //         let chromium = playwright.chromium();
+    //         let browser = chromium.launcher().headless(true).launch().await.unwrap();
+    //         let context = browser.context_builder().build().await.unwrap();
+    //         let page = context.new_page().await.unwrap();
+    //
+    //         let prefix_url = match std::env::var("CATIMG_URL") {
+    //             Ok(prefix_url) => prefix_url,
+    //             Err(_) => "https://catimg.kalkafox.dev".to_string(),
+    //         };
+    //
+    //         let formatted_url = format!(
+    //             "{}/?url={}&w={}&fs=true",
+    //             prefix_url,
+    //             query.get("url").unwrap(),
+    //             query.get("w").unwrap_or(&"200".to_string())
+    //         );
+    //
+    //         page.goto_builder(formatted_url.as_str())
+    //             .goto()
+    //             .await
+    //             .unwrap();
+    //
+    //         // Continuously page.eval("() => window.terminalLoaded").await until it's true
+    //
+    //         let now = std::time::Instant::now();
+    //
+    //         loop {
+    //             // If it's been more than 30 seconds, return 404
+    //             if now.elapsed().as_secs() > 30 {
+    //                 return Err(warp::reject::not_found());
+    //             }
+    //             // If terminalLoaded is true, break
+    //             let loaded = page.eval("() => window.terminalLoaded").await;
+    //             if let Ok(loaded) = loaded {
+    //                 if loaded {
+    //                     break;
+    //                 }
+    //             }
+    //             // Otherwise, sleep for 100ms
+    //             tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+    //         }
+    //
+    //         let image = page.screenshot_builder().screenshot().await.unwrap();
+    //
+    //         Ok::<_, warp::Rejection>(warp::reply::with_header(image, "Content-Type", "image/png"))
+    //     });
 
     let assets_route = warp::path!("assets" / String).and_then(|file_name: String| async move {
         let path = match std::env::var("CATIMG_PATH") {
@@ -318,7 +318,6 @@ async fn main() {
     let ping_route = warp::path!("ping").map(|| "pong");
 
     let routes = catimg_route
-        .or(preview_route)
         .or(html_route)
         .or(assets_route)
         .or(ping_route)
